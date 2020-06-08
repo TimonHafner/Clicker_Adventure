@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Ultra Hühnergame</title>
+  <title>Ultra Chickengame</title>
 
   <!-- Add Vue to the Project -->
   <script src="https://unpkg.com/vue"></script>
@@ -24,23 +24,24 @@
 <body>
   <div id="app">
     <b-card-group deck>
-      <b-card style="max-width: 20rem;" header="Eier">
+      <b-card style="max-width: 20rem;" header="Eggs">
         <b-layout fluid>
           <b-row>
             <b-col>
-              {{ score }} {{ score === 1n ? "Ei" : "Eier"}}
+              {{ score }} {{ score === 1n ? "Egg" : "Eggs"}}
             </b-col>
             <b-col cols="4">
               <b-button @click="addManual" variant="primary">+ {{ buttonValue }}</b-button>
+              <b-button @click="addManual2" variant="primary">+ {{ buttonValue2 }}</b-button>
             </b-col>
           </b-row>
         </b-layout>
       </b-card>
-      <b-card v-if="chicken.allow" style="max-width: 20rem;" header="Hühner">
+      <b-card style="max-width: 20rem;" header="Chickens">
         <b-layout fluid>
           <b-row>
             <b-col>
-              <div>{{ chicken.count }} {{ chicken.count === 1 ? "Huhn" : "Hühner"}}</div>
+              <div>{{ chicken.count }} {{ chicken.count === 1 ? "Chicken" : "Chickens"}}</div>
             </b-col>
             <b-col cols="4">
               <b-button @click="buyChicken" variant="primary" :disabled="score < chicken.price">{{ chicken.price }}
@@ -49,7 +50,7 @@
           </b-row>
           <b-row v-if="chicken.allowImprovements">
             <b-col>
-              Verbessere Hühner
+              Improve Chickens
             </b-col>
             <b-col cols="4">
               <b-button @click="improveChicken" variant="primary" class="mt-2" :disabled="score < chicken.improvmentprice">
@@ -59,22 +60,47 @@
           </b-row>
         </b-layout>
       </b-card>
+      <b-card style="max-width: 20rem;" header="Chickenwings">
+        <b-layout fluid>
+          <b-row>
+            <b-col>
+              {{ chickenwings.count }} chickenwings
+            </b-col>
+            <b-col cols="4">
+              <b-button @click="killChicken" variant="primary" :disabled="chicken.count < chickenwings.price">{{ chickenwings.price }}</b-button>
+            </b-col>
+          </b-row>
+        </b-layout>
+      </b-card>
+      <b-card style="max-width: 50rem;" header="Money">
+        <b-layout fluid>
+          <b-row>
+            <b-col>
+              {{ Money.count }} Money
+            </b-col>
+            <b-col cols="4">
+            </b-col>
+          </b-row>
+        </b-layout>
+      </b-card>
     </b-card-group>
-
+    <!-- DEBUG
       <pre>
         {{ $data }}
       </pre>
-
+    -->
   </div>
 
   <script>
     var app = new Vue({
       el: '#app',
       data: {
+        steps: 0,
         message: 'Hello Vue!',
-        score: 0n,
+        score: 0,
         increment: 0.00,
         buttonValue: 1,
+        buttonValue2: 50,
         chicken: {
           count: 0,
           price: 100,
@@ -86,9 +112,18 @@
             stepsRequired: 1000,
             stepsDone: 0
           }
+        },
+        chickenwings: {
+          count: 0,
+          price: 1,
+        },
+        Money: {
+          count: 0,
         }
+        
       },
       created: function () {
+        // Nächste Zeile ignorieren
         BigInt.prototype.toJSON = function () { return this.toString() }
         setInterval(() => {
           this.update()
@@ -96,21 +131,36 @@
       },
       methods: {
         update: function () {
+          this.steps++
+          // Eier legen
           this.chicken.production.stepsDone += this.chicken.count * this.chicken.production.strength
           if (this.chicken.production.stepsDone >= this.chicken.production.stepsRequired) {
-            this.score += BigInt(this.chicken.production.strength)
+            this.score += this.chicken.production.strength
             this.chicken.production.stepsDone = 0
+          }
+
+          if (this.steps >= 50) {
+            this.steps = 0
+            //Möglichkeit Schlüpfen
+            hatchedCount = 0
+            for (let i = 0; i < this.score; i++){
+              if (Math.random() < 0.00001){
+                hatchedCount++
+              }
+            }
+            this.chicken.count += hatchedCount
+            this.score -= hatchedCount
           }
         },
         addManual: function () {
-          this.score += BigInt(this.buttonValue)
-          if (this.score == BigInt(50)) {
-            this.chicken.allow = true
-          }
+          this.score += this.buttonValue
+        },
+        addManual2: function () {
+          this.score += this.buttonValue2
         },
         buyChicken: function () {
           if (this.score >= this.chicken.price) {
-            this.score -= BigInt(this.chicken.price)
+            this.score -= this.chicken.price
             this.chicken.count++
             this.chicken.price = Math.ceil(this.chicken.price * 1.2)
             if (this.chicken.count == 5) {
@@ -118,9 +168,15 @@
             }
           }
         },
+        killChicken: function () {
+          if (this.chicken.count >= this.chickenwings.price) {
+            this.chicken.count -= this.chickenwings.price
+            this.chickenwings.count += 2
+          }
+        },
         improveChicken: function () {
           if (this.score >= this.chicken.improvmentprice) {
-            this.score -= BigInt(this.chicken.improvmentprice)
+            this.score -= this.chicken.improvmentprice
             this.chicken.production.stepsRequired = Math.floor(this.chicken.production.stepsRequired * 0.95)
             this.chicken.improvmentprice = Math.ceil(this.chicken.improvmentprice * 1.5)
           }
