@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Ultra Hühnergame</title>
+  <title>Ultra Hühnergame-Timon</title>
 
   <!-- Add Vue to the Project -->
   <script src="https://unpkg.com/vue"></script>
@@ -89,6 +89,7 @@
         }
       },
       created: function () {
+        // Nächste Zeile ignorieren
         BigInt.prototype.toJSON = function () { return this.toString() }
         setInterval(() => {
           this.update()
