@@ -61,7 +61,7 @@
           </b-row>
         </b-layout>
       </b-card>
-      <b-card  header="Chickenwings">
+      <b-card  header="Chicken meat">
         <b-layout fluid>
           <b-row>
             <b-col>
@@ -77,6 +77,7 @@
               {{ Butcher.chickenThighs.count }} Chicken thighs
             </b-col>
             <b-col cols="6">
+              <b-button @click="sellChickenWings" variant="primary" :disabled="chickenWings.count == 0" class="mt-2">{{ chickenWings.money }} $</b-button>
             </b-col>
           </b-row>
           </b-row>
@@ -201,6 +202,7 @@
           allowChickenBreast: false,
           chickenThighs:{
             count: 0,
+            money: 3,
           chickenBreast: {
             count: 0,
           },
@@ -278,6 +280,12 @@
         sellChickenWings: function () {
           if (this.chickenWings.count >= 2){
             this.Money.count += this.chickenWings.money
+            this.chickenWings.count -= 2
+          }
+        },
+        sellChickenThighs: function () {
+          if (this.Butcher.chickenThighs.count >= 2){
+            this.Money.count += this.chickenThighs.money
             this.chickenWings.count -= 2
           }
         },
