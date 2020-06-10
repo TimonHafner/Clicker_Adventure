@@ -72,6 +72,22 @@
               <b-button @click="sellChickenWings" variant="primary" :disabled="chickenWings.count == 0" class="mt-2">{{ chickenWings.money }} $</b-button>
             </b-col>
           </b-row>
+          <b-row v-if="Butcher.allowChickenThighs">
+            <b-col>
+              {{ Butcher.chickenThighs.count }} Chicken thighs
+            </b-col>
+            <b-col cols="6">
+            </b-col>
+          </b-row>
+          </b-row>
+          <b-row v-if="Butcher.allowChickenBreast">
+            <b-col>
+              {{ Butcher.chickenBreast.count }} Chicken thighs
+            </b-col>
+            <b-col cols="6">
+            </b-col>
+          </b-row>
+          </b-row>
         </b-layout>
       </b-card>
       <b-card style="width: 500rem;" header="Money">
@@ -111,6 +127,26 @@
           </b-col>
           <b-col cols="6">
             <b-button @click="buyEggs" variant="primary" :disabled="Money.count < Eggs.price">{{ Eggs.price }} $</b-button>
+          </b-col>
+        </b-row>
+      </b-layout>
+    </b-card>
+    <b-card style="width: 20rem;" header="Upgrade Butcher">
+      <b-layout fluid>
+        <b-row>
+          <b-col>    
+            chicken thighs
+          </b-col>
+          <b-col cols="6">
+            <b-button @click="upgradeButcher" variant="primary" :disabled="Money.count < Butcher.price"> {{ Butcher.price }} $ to Unlock </b-button>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>    
+            chicken breast
+          </b-col>
+          <b-col cols="6">
+            <b-button @click="upgradeButcher" variant="primary" :disabled="Money.count < Butcher.price" class="mt-2"> {{ Butcher.price }} $ to Unlock </b-button>
           </b-col>
         </b-row>
       </b-layout>
@@ -157,6 +193,18 @@
           LvL: 0,
           price: 20,
           strength: 0.0001,
+        },
+        Butcher:{
+          price: 100,
+          price2: 200,
+          allowChickenThighs: false,
+          allowChickenBreast: false,
+          chickenThighs:{
+            count: 0,
+          chickenBreast: {
+            count: 0,
+          },
+          }
         }
         
       },
@@ -167,8 +215,9 @@
           this.update()
         }, 10)
         setInterval(() =>{
-          this.Eggs.onStock = Math.floor(Math.random()*10)
+          this.setRandomAmountOfEggs()
         }, 1000*10)
+        this.setRandomAmountOfEggs()
       },
       methods: {
         update: function () {
@@ -213,6 +262,10 @@
           if (this.chicken.count >= this.chickenWings.price) {
             this.chicken.count -= this.chickenWings.price
             this.chickenWings.count += 2
+          
+            if (this.Butcher.allowChickenThighs == true) {
+              this.Butcher.chickenThighs.count += 2
+            }
           }
         },
         improveChicken: function () {
@@ -251,8 +304,21 @@
         buyEggs: function () {
           if (this.Money.count >= this.Eggs.price && this.Eggs.onStock > 0){
             this.Money.count -= this.Eggs.price
-            this.Eggs.score ++
-            this.Eggs.onStock
+            this.Eggs.score += this.Eggs.onStock
+          }
+        },
+        setRandomAmountOfEggs: function () {
+          this.Eggs.onStock = Math.floor(Math.random()*10)
+        },
+        upgradeButcher: function () {
+          if (this.Money.count >= this.Butcher.price){
+            this.Money.count -= this.Butcher.price
+            this.Butcher.allowChickenThighs = true
+
+            if(this.Money.count >= this.Butcher.price2 && this.Butcher.allowChickenThighs == true){
+              this.Money.count -= this.Butcher.price2
+              this.Butcher.allowChickenBreast = true
+            }
           }
         },
       }
