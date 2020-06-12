@@ -46,7 +46,7 @@
             </b-col>
             <b-col cols="6">
               <b-button @click="buyChicken" variant="primary" :disabled="Eggs.score < chicken.price">{{ chicken.price }} Eggs</b-button>
-              <b-button @click="sellChicken" variant="primary" :disabled="chicken.count == 0" class="mt-2">{{ chicken.money }} $</b-button>
+              <b-button @click="sellChicken" variant="primary" :disabled="chicken.count == 0">{{ chicken.money }} $</b-button>
             </b-col>
           </b-row>
           <b-row v-if="chicken.allowImprovements">
@@ -69,7 +69,7 @@
             </b-col>
             <b-col cols="6">
               <b-button @click="killChicken" variant="primary" :disabled="chicken.count < chickenWings.price">{{ chickenWings.price }} Chicken</b-button>
-              <b-button @click="sellChickenWings" variant="primary" :disabled="chickenWings.count == 0" class="mt-2">{{ chickenWings.money }} $</b-button>
+              <b-button @click="sellChickenWings" variant="primary" :disabled="chickenWings.count == 0">{{ chickenWings.money }} $</b-button>
             </b-col>
           </b-row>
           <b-row v-if="Butcher.allowChickenThighs">
@@ -77,13 +77,13 @@
               {{ Butcher.chickenThighs.count }} Chicken thighs
             </b-col>
             <b-col cols="6">
-              <b-button @click="sellChickenThighs" variant="primary" :disabled="chickenWings.count == 0" class="mt-2">{{ chickenWings.money }} $</b-button>
+              <b-button @click="sellChickenThighs" variant="primary" :disabled="chickenWings.count == 0">{{ chickenWings.money }} $</b-button>
             </b-col>
           </b-row>
           </b-row>
-          <b-row v-if="Butcher.allowChickenBreast">
+          <b-row v-if="Butcher.allowChickenBreast && Butcher.allowChickenThighs">
             <b-col>
-              {{ Butcher.chickenBreast.count }} Chicken thighs
+              {{ Butcher.chickenBreast.count }} Chicken breast
             </b-col>
             <b-col cols="6">
             </b-col>
@@ -142,7 +142,7 @@
             chicken breast
           </b-col>
           <b-col cols="6">
-            <b-button @click="upgradeButcher" variant="primary" :disabled="Money.count < Butcher.price" class="mt-2"> {{ Butcher.price }} $ to Unlock </b-button>
+            <b-button @click="upgradeButcher" variant="primary" :disabled="Money.count < Butcher.price2 && Butcher.allowChickenThighs == false" class="mt-2"> {{ Butcher.price2 }} $ to Unlock </b-button>
           </b-col>
         </b-row>
       </b-layout>
@@ -225,6 +225,7 @@
             money: 3,
           chickenBreast: {
             count: 0,
+            money: 5,
           },
           }
         }
@@ -301,6 +302,12 @@
           if (this.chickenWings.count >= 2){
             this.Money.count += this.chickenWings.money
             this.chickenWings.count -= 2
+          }
+        },
+        sellChickenBreast: function () {
+          if (this.Butcher.chickenBreast.count >= 2){
+            this.Money.count += this.Butcher.chickenBreast.money
+            this.Butcher.chickenBreast.count -= 2
           }
         },
         sellChickenThighs: function () {
