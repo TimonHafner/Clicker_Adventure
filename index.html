@@ -77,7 +77,7 @@
               {{ Butcher.chickenThighs.count }} Chicken thighs
             </b-col>
             <b-col cols="6">
-              <b-button @click="sellChickenWings" variant="primary" :disabled="chickenWings.count == 0" class="mt-2">{{ chickenWings.money }} $</b-button>
+              <b-button @click="sellChickenThighs" variant="primary" :disabled="chickenWings.count == 0" class="mt-2">{{ chickenWings.money }} $</b-button>
             </b-col>
           </b-row>
           </b-row>
@@ -103,11 +103,6 @@
         </b-layout>
       </b-card>
     </b-card-group>
-    <b-card>
-      <pre>
-        {{ $data }}
-      </pre>
-    </b-card>
     <b-card style="width: 20rem;" header="Incubator">
       <b-layout fluid>
         <b-row>
@@ -115,7 +110,7 @@
             Level {{Incubator.LvL}}
           </b-col>
           <b-col cols="6">
-            <b-button @click="buyIncubator" variant="primary" :disabled="Money.count < Incubator.price" >{{ Incubator.price }} $</b-button>
+            <b-button @click="buyIncubator" variant="primary" :disabled="Money.count < Incubator.price || Incubator.LvL > 5" >{{ Incubator.price }} $</b-button>
           </b-col>
         </b-row>
       </b-layout>
@@ -152,11 +147,36 @@
         </b-row>
       </b-layout>
     </b-card>
+    <b-card>
+      <pre>
+        {{ $data }}
+      </pre>
+    </b-card>
   </div>
 
   <script>
     var app = new Vue({
       el: '#app',
+
+
+
+
+
+
+// .########.....###....########....###...
+// .##.....##...##.##......##......##.##..
+// .##.....##..##...##.....##.....##...##.
+// .##.....##.##.....##....##....##.....##
+// .##.....##.#########....##....#########
+// .##.....##.##.....##....##....##.....##
+// .########..##.....##....##....##.....##
+                                             
+                                             
+                                             
+
+
+
+
       data: {
         steps: 0,
         message: 'Hello Vue!',
@@ -285,8 +305,8 @@
         },
         sellChickenThighs: function () {
           if (this.Butcher.chickenThighs.count >= 2){
-            this.Money.count += this.chickenThighs.money
-            this.chickenWings.count -= 2
+            this.Money.count += this.Butcher.chickenThighs.money
+            this.Butcher.chickenThighs.count -= 2
           }
         },
         sellChicken: function () {
@@ -302,7 +322,7 @@
           }
         },
         buyIncubator: function () {
-          if (this.Money.count >= this.Incubator.price){
+          if (this.Money.count >= this.Incubator.price && this.Incubator.LvL < 5){
             this.Money.count -= this.Incubator.price
             this.Incubator.price +=30
             this.Incubator.LvL ++
